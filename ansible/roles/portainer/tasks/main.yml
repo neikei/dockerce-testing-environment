@@ -1,0 +1,23 @@
+##################################################
+### Install required packages
+- name: Install required packages
+  apt: name={{ item }} state=present
+  with_items:
+    - python-docker
+
+##################################################
+### Install Portainer
+- name: Create Portainer data folder
+  file: path=/opt/portainer/data state=directory recurse=yes
+
+- name: Install Portainer
+  docker_container:
+    name: "portainer"
+    image: "portainer/portainer:latest"
+    state: "started"
+    restart_policy: "always"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - /opt/portainer/data:/data
+    ports:
+      - 80:9000
