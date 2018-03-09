@@ -1,14 +1,19 @@
 ##################################################
 ### Install required packages
 - name: Install required packages
-  apt: name={{ item }} state=present
+  apt: 
+    name: "{{ item }}"
+    state: present
   with_items:
     - python-docker
 
 ##################################################
 ### Install Portainer
 - name: Create Portainer data folder
-  file: path=/opt/portainer/data state=directory recurse=yes
+  file: 
+    path: /opt/portainer/data 
+    state: directory 
+    recurse: yes
 
 - name: Install Portainer
   docker_container:
