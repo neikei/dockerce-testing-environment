@@ -30,3 +30,20 @@
     update_cache: yes
   with_items:
     - docker-ce
+    - docker-compose
+
+##################################################
+### Configure Docker CE
+- name: Add ip parameter to the systemd config of Docker CE
+  replace:
+    path: /lib/systemd/system/docker.service
+    regexp: 'ExecStart=/usr/bin/dockerd -H fd://'
+    replace: 'ExecStart=/usr/bin/dockerd --ip "{{ ansible_eth1.ipv4.address }}" -H fd://'
+  register: dockerce_config
+
+- name: Reload systemd and restart Docker CE
+  systemd:
+    name: docker
+    state: restarted
+    daemon_reload: yes
+  when: dockerce_config.changed

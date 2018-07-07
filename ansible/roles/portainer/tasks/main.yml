@@ -15,7 +15,7 @@
     state: directory 
     recurse: yes
 
-- name: Install Portainer
+- name: Start Portainer
   docker_container:
     name: "portainer"
     image: "portainer/portainer:latest"
@@ -25,20 +25,4 @@
       - /var/run/docker.sock:/var/run/docker.sock
       - /opt/portainer/data:/data
     ports:
-      - 80:9000
-
-##################################################
-### Configure Docker CE
-- name: Add ip parameter to the systemd config of Docker CE
-  replace:
-    path: /lib/systemd/system/docker.service
-    regexp: 'ExecStart=/usr/bin/dockerd -H fd://'
-    replace: 'ExecStart=/usr/bin/dockerd --ip "{{ ansible_eth1.ipv4.address }}" -H fd://'
-  register: dockerce_config
-
-- name: Reload systemd and restart Docker CE
-  systemd:
-    name: docker
-    state: restarted
-    daemon_reload: yes
-  when: dockerce_config.changed
+      - "{{ ansible_eth1.ipv4.address }}:80:9000"
