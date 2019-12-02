@@ -2,48 +2,47 @@
 ### Install required packages
 - name: Install required packages
   apt: 
-    name: "{{ item }}"
+    name:
+      - apt-transport-https
+      - ca-certificates
+      - curl
+      - gnupg2
+      - software-properties-common
     state: present
-  with_items:
-    - apt-transport-https
-    - ca-certificates
-    - curl
-    - gnupg2
-    - software-properties-common
 
 ##################################################
 ### Install Docker CE
 - name: Add apt key
   apt_key:
-    url: https://download.docker.com/linux/{{ ansible_distribution|lower }}/gpg
+    url: "https://download.docker.com/linux/{{ ansible_distribution|lower }}/gpg"
     state: present
 
 - name: Add apt repository
   apt_repository:
-    repo: deb [arch=amd64] https://download.docker.com/linux/{{ ansible_distribution|lower }} {{ ansible_distribution_release|lower }} stable
+    repo: "deb [arch=amd64] https://download.docker.com/linux/{{ ansible_distribution|lower }} {{ ansible_distribution_release|lower }} stable"
     state: present
 
 - name: Install Docker CE
   apt: 
-    name: "{{ item }}"
+    name:
+      - docker-ce
+      - docker-compose
     state: latest
     update_cache: yes
-  with_items:
-    - docker-ce
-    - docker-compose
 
 ##################################################
 ### Configure Docker CE
 - name: Add ip parameter to the systemd config of Docker CE
   replace:
-    path: /lib/systemd/system/docker.service
+    path: "/lib/systemd/system/docker.service"
     regexp: 'ExecStart=/usr/bin/dockerd -H fd://'
     replace: 'ExecStart=/usr/bin/dockerd --ip "{{ ansible_eth1.ipv4.address }}" -H fd://'
   register: dockerce_config
 
 - name: Reload systemd and restart Docker CE
   systemd:
-    name: docker
+    name: "docker"
     state: restarted
+    enabled: yes
     daemon_reload: yes
   when: dockerce_config.changed

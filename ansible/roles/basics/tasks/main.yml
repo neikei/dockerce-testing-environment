@@ -1,48 +1,46 @@
 ##################################################
 ### Install basic system packages
-- name: Install basic packages
+- name: "Install basic packages"
   apt: 
-    name: "{{ item }}"
+    name:
+      - vim
+      - git
+      - curl
+      - wget
+      - zip
+      - unzip
+      - htop
+      - iotop
+      - debian-goodies
+      - apt-transport-https
+      - ca-certificates
+      - imagemagick
     state: present
-  with_items:
-    - vim
-    - git
-    - curl
-    - wget
-    - zip
-    - unzip
-    - htop
-    - iotop
-    - postfix
-    - debian-goodies
-    - apt-transport-https
-    - ca-certificates
-    - imagemagick
 
 ##################################################
 ### Convenience
 - name: Configure inputrc and vimrc for root
-  template: 
+  template:
     src: "{{ item.src }}"
     dest: "{{ item.dest }}"
   with_items:
-   - { src: inputrc, dest: /root/.inputrc }
-   - { src: vimrc, dest: /root/.vimrc }
-   - { src: inputrc, dest: /home/vagrant/.inputrc }
-   - { src: vimrc, dest: /home/vagrant/.vimrc }
+   - { src: "inputrc", dest: "/root/.inputrc" }
+   - { src: "vimrc", dest: "/root/.vimrc" }
+   - { src: "inputrc", dest: "/home/vagrant/.inputrc" }
+   - { src: "vimrc", dest: "/home/vagrant/.vimrc" }
 
 ##################################################
-### Install and configute ufw firewall
+### Install and configure ufw firewall
 - name: Set up firewall
-  apt: 
+  apt:
     name: ufw
     state: present
 
 - name: Allow Port 22
-  ufw: 
-    rule: allow 
-    port: 22
+  ufw:
+    port: "22"
+    rule: allow
 
 - name: Start the firewall
-  ufw: 
+  ufw:
     state: enabled
