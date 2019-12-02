@@ -12,7 +12,7 @@ Vagrant.require_version ">= 2.0.1"
 # backwards compatibility). Please don't change it unless you know what
 # you're doing.
 Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
-  config.vm.box = "debian/stretch64"
+  config.vm.box = "debian/buster64"
 
   config.vm.provider "parallels"
   config.vm.provider "virtualbox"
@@ -22,8 +22,9 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
      exit
   end
 
+  # TODO: Review after this issue is fixed https://github.com/dotless-de/vagrant-vbguest/issues/351
   if Vagrant.has_plugin?('vagrant-vbguest')
-      config.vbguest.auto_update = true
+      config.vbguest.auto_update = false
   end
 
   config.vm.provider "virtualbox" do |vb|
